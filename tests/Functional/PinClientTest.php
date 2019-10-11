@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Liweiyi\PinPayments\Tests\Functional;
 
-use Liweiyi\PinPayments\Parameters\CardParameter;
 use Liweiyi\PinPayments\Parameters\Cards\StoreCardParameter;
 use Liweiyi\PinPayments\Parameters\Charges\ChargeCardParameter;
 use Liweiyi\PinPayments\PinClient;
+use Liweiyi\PinPayments\Tests\TestCardsTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\HttpClient;
 
@@ -16,6 +16,8 @@ use Symfony\Component\HttpClient\HttpClient;
  */
 final class PinClientTest extends TestCase
 {
+    use TestCardsTrait;
+
     private $pinClient;
     private $validCard;
 
@@ -25,16 +27,7 @@ final class PinClientTest extends TestCase
 
         $apiKey = (string)\getenv('PIN_PAYMENTS_API_KEY');
         $this->pinClient = new PinClient($apiKey, HttpClient::create());
-        $this->validCard = new CardParameter(
-            '4200000000000000',
-            '01',
-            (string)((int)date('Y') + 1),
-            '123',
-            'Julian Li',
-            '18 Lower Esplanade',
-            'Melbourne',
-            'Australia'
-        );
+        $this->validCard = $this->createTestValidCard();
     }
 
     /**
@@ -69,6 +62,7 @@ final class PinClientTest extends TestCase
      * Test charge a card.
      *
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
@@ -88,6 +82,7 @@ final class PinClientTest extends TestCase
         $response = $this->pinClient->chargeCard($parameter);
         $this->assertSame(201, $response->getStatusCode());
         $this->assertStringContainsString('success', $response->getContent());
+        $this->assertTrue($response->toArray()['response']['captured']);
     }
 
     /**
