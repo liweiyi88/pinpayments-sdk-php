@@ -1,0 +1,32 @@
+{
+    "type": "library",
+    "name": "liweiyi/pinpayments-sdk-php",
+    "keywords": ["pin","payment","sdk"],
+    "authors": [
+        {
+            "name": "Weiyi Li",
+            "email": "weiyi.li713@gmail.com"
+        }
+    ],
+    "license": "MIT",
+    "description": "PHP SDK For Pin Payments",
+    "require": {
+        "symfony/http-client": "^4.3.5"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.4.1",
+        "squizlabs/php_codesniffer": "3.*",
+        "phpstan/phpstan": "^0.11.16"
+    },
+    "autoload": {
+        "psr-4": {
+            "Liweiyi\\PinPayments\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Liweiyi\\PinPayments\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable"
+}
