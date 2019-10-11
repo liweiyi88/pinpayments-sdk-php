@@ -12,7 +12,7 @@ use Liweiyi\PinPayments\Parameters\ParameterInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class PinClient
+final class PinClient
 {
     public const API_VERSION = '1';
 

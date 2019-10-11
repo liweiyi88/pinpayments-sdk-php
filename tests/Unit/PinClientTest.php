@@ -18,7 +18,6 @@ final class PinClientTest extends TestCase
      * Test capture charge token request.
      *
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
@@ -43,7 +42,6 @@ final class PinClientTest extends TestCase
         $this->assertSame(404, $notFoundResponse->getStatusCode());
 
         $successResponse = $pinClient->capture('not_found_token');
-        $this->assertArrayHasKey('response', $successResponse->toArray());
         $this->assertSame(201, $successResponse->getStatusCode());
     }
 }

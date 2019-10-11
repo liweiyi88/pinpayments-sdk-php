@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Liweiyi\PinPayments\Parameters;
 
-class CardParameter implements ParameterInterface
+final class CardParameter implements ParameterInterface
 {
     private $number;
     private $expiryMonth;
