@@ -1,0 +1,15 @@
+dist: trusty
+
+language: php
+
+php:
+  - '7.2'
+
+before_install:
+  - composer install
+
+script:
+  - make ci
+
+after_success:
+  bash <(curl -s https://codecov.io/bash)
