@@ -10,15 +10,15 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Liweiyi\PinPayments\Parameters\Charges\ChargeCardParameter
- * @covers \Liweiyi\PinPayments\Parameters\Charges\BaseChargeParameter
+ * @covers \Liweiyi\PinPayments\Parameters\Charges\AbstractChargeParameter
  */
-class ChargeCardParameterTest extends TestCase
+final class ChargeCardParameterTest extends TestCase
 {
     use TestCardsTrait;
 
     public function testGetPayload(): void
     {
-        $card = $this->createTestValidCard();
+        $card = $this->createTestValidVisaCard();
 
         $parameter = (new ChargeCardParameter(
             'test@example.com',

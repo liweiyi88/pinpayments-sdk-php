@@ -10,16 +10,17 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Liweiyi\PinPayments\Parameters\CardParameter
  */
-class CardParameterTest extends TestCase
+final class CardParameterTest extends TestCase
 {
     use TestCardsTrait;
 
     public function testPayload(): void
     {
-        $cardParameter = $this->createTestValidCard()
+        $cardParameter = $this->createTestValidVisaCard()
             ->setPostcode('3000')
             ->setState('VIC')
-            ->setAddressLine2('a secret place');
+            ->setAddressLine2('a secret place')
+            ->setPublishableApiKey('my_publish_key');
 
         $expected = [
             'number' => '4200000000000000',
@@ -32,7 +33,8 @@ class CardParameterTest extends TestCase
             'address_country' => 'Australia',
             'address_line2' => 'a secret place',
             'address_postcode' => '3000',
-            'address_state' => 'VIC'
+            'address_state' => 'VIC',
+            'publishable_api_key' => 'my_publish_key'
         ];
 
         $this->assertSame($expected, $cardParameter->getPayload());

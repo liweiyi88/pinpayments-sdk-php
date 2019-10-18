@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Liweiyi\PinPayments\Parameters\Charges;
 
-final class ChargeCardTokenParameter extends BaseChargeParameter
+final class ChargeCardTokenParameter extends AbstractChargeParameter
 {
     private $cardToken;
 

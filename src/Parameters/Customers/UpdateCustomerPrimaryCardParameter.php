@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Liweiyi\PinPayments\Parameters\Charges;
+namespace Liweiyi\PinPayments\Parameters\Customers;
 
 use Liweiyi\PinPayments\Parameters\CardParameter;
 
-final class ChargeCardParameter extends AbstractChargeParameter
+final class UpdateCustomerPrimaryCardParameter extends AbstractUpdateCustomerParameter
 {
     private $card;
 
-    public function __construct(string $email, string $description, int $amount, string $ipAddress, CardParameter $card)
+    public function __construct(CardParameter $card, ?string $email = null)
     {
-        parent::__construct($email, $description, $amount, $ipAddress);
+        parent::__construct($email);
         $this->card = $card;
     }
 

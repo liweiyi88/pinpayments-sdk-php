@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Liweiyi\PinPayments\Parameters\Charges\ChargeCustomerTokenParameter
  */
-class ChargeCustomerTokenParameterTest extends TestCase
+final class ChargeCustomerTokenParameterTest extends TestCase
 {
     public function testGetPayload(): void
     {

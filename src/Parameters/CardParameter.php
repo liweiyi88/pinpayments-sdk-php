@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Liweiyi\PinPayments\Parameters;
 
-class CardParameter implements ParameterInterface
+use Liweiyi\PinPayments\Parameters\Customers\CreateCustomerCardParameterInterface;
+
+final class CardParameter implements CreateCustomerCardParameterInterface
 {
     private $number;
     private $expiryMonth;
@@ -17,6 +19,7 @@ class CardParameter implements ParameterInterface
     private $country;
     private $postcode;
     private $state;
+    private $publishableApiKey;
 
     public function __construct(
         string $number,
@@ -29,7 +32,8 @@ class CardParameter implements ParameterInterface
         string $country,
         ?string $addressLine2 = null,
         ?string $postcode = null,
-        ?string $state = null
+        ?string $state = null,
+        ?string $publishableApiKey = null
     ) {
         $this->number = $number;
         $this->expiryMonth = $expiryMonth;
@@ -42,80 +46,33 @@ class CardParameter implements ParameterInterface
         $this->country = $country;
         $this->postcode = $postcode;
         $this->state = $state;
+        $this->publishableApiKey = $publishableApiKey;
     }
 
-    public function getNumber(): string
-    {
-        return $this->number;
-    }
-
-    public function getExpiryMonth(): string
-    {
-        return $this->expiryMonth;
-    }
-
-    public function getExpiryYear(): string
-    {
-        return $this->expiryYear;
-    }
-
-    public function getCvc(): string
-    {
-        return $this->cvc;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    public function getAddressLine1(): string
-    {
-        return $this->addressLine1;
-    }
-
-    public function getAddressLine2(): ?string
-    {
-        return $this->addressLine2;
-    }
-
-    public function getCity(): string
-    {
-        return $this->city;
-    }
-
-    public function getCountry(): string
-    {
-        return $this->country;
-    }
-
-    public function getPostcode(): ?string
-    {
-        return $this->postcode;
-    }
-
-    public function getState(): ?string
-    {
-        return $this->state;
-    }
-
-    public function setAddressLine2(?string $addressLine2): self
+    public function setAddressLine2(?string $addressLine2 = null): self
     {
         $this->addressLine2 = $addressLine2;
 
         return $this;
     }
 
-    public function setPostcode(?string $postcode): self
+    public function setPostcode(?string $postcode = null): self
     {
         $this->postcode = $postcode;
 
         return $this;
     }
 
-    public function setState(?string $state): self
+    public function setState(?string $state = null): self
     {
         $this->state = $state;
+
+        return $this;
+    }
+
+    public function setPublishableApiKey(?string $publishableApiKey = null): self
+    {
+        $this->publishableApiKey = $publishableApiKey;
 
         return $this;
     }
@@ -143,6 +100,10 @@ class CardParameter implements ParameterInterface
 
         if (null !== $this->state) {
             $payload['address_state'] = $this->state;
+        }
+
+        if (null !== $this->publishableApiKey) {
+            $payload['publishable_api_key'] = $this->publishableApiKey;
         }
 
         return $payload;

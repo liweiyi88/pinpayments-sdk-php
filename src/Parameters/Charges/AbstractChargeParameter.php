@@ -6,7 +6,7 @@ namespace Liweiyi\PinPayments\Parameters\Charges;
 
 use Liweiyi\PinPayments\Parameters\ParameterInterface;
 
-abstract class BaseChargeParameter implements ParameterInterface
+abstract class AbstractChargeParameter implements ParameterInterface
 {
     private $email;
     private $description;

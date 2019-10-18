@@ -4,22 +4,31 @@ declare(strict_types=1);
 
 namespace Liweiyi\PinPayments\Tests\Functional;
 
-use Liweiyi\PinPayments\Parameters\Cards\StoreCardParameter;
-use Liweiyi\PinPayments\Parameters\Charges\ChargeCardParameter;
+use Liweiyi\PinPayments\Parameters\CardParameter;
+use Liweiyi\PinPayments\Parameters\Customers\CreateCardCustomerParameter;
 use Liweiyi\PinPayments\PinClient;
 use Liweiyi\PinPayments\Tests\TestCardsTrait;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\HttpClient;
 
-/**
- * @covers \Liweiyi\PinPayments\PinClient
- */
-final class PinClientTest extends TestCase
+abstract class PinClientTest extends TestCase
 {
     use TestCardsTrait;
 
-    private $pinClient;
-    private $validCard;
+    /**
+     * @var \Liweiyi\PinPayments\PinClient
+     */
+    protected $pinClient;
+
+    /**
+     * @var \Liweiyi\PinPayments\Parameters\CardParameter
+     */
+    protected $validVisaCard;
+
+    /**
+     * @var \Liweiyi\PinPayments\Parameters\CardParameter
+     */
+    protected $validMasterCard;
 
     public function setUp(): void
     {
@@ -27,11 +36,15 @@ final class PinClientTest extends TestCase
 
         $apiKey = (string)\getenv('PIN_PAYMENTS_API_KEY');
         $this->pinClient = new PinClient($apiKey, HttpClient::create());
-        $this->validCard = $this->createTestValidCard();
+        $this->validVisaCard = $this->getValidCardParameter('visa');
+        $this->validMasterCard = $this->getValidCardParameter('master');
     }
 
     /**
-     * Test capture a token.
+     * @param string $email
+     * @param string $cardType
+     *
+     * @return string
      *
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
@@ -39,27 +52,21 @@ final class PinClientTest extends TestCase
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function testCapture(): void
+    protected function createCardCustomerToken(string $email, string $cardType): string
     {
-        $parameter = (new ChargeCardParameter(
-            'test@example.com',
-            'Charge Function Test',
-            100,
-            '127.0.0.1',
-            $this->validCard
-        ))->setCapture(false)
-            ->setCurrency('USD')
-            ->setMetadata(['Meta1' => 'meta']);
+        $cardCustomer = new CreateCardCustomerParameter(
+            $email,
+            $this->getValidCardParameter($cardType)
+        );
 
-        $chargeResponse = $this->pinClient->chargeCard($parameter)->toArray();
-
-        $response = $this->pinClient->capture($chargeResponse['response']['token']);
-        $this->assertSame(201, $response->getStatusCode());
-        $this->assertStringContainsString('success', $response->getContent(false));
+        $response = $this->pinClient->createCustomerByCard($cardCustomer)->toArray();
+        return $response['response']['token'];
     }
 
     /**
-     * Test charge a card.
+     * @param string $cardType
+     *
+     * @return string
      *
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
@@ -67,51 +74,23 @@ final class PinClientTest extends TestCase
      * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function testChargeCard(): void
+    protected function createCardToken(string $cardType): string
     {
-        $parameter = (new ChargeCardParameter(
-            'test@example.com',
-            'Charge Function Test',
-            100,
-            '127.0.0.1',
-            $this->validCard
-        ))->setCapture(true)
-        ->setCurrency('USD')
-        ->setMetadata(['Meta1' => 'meta']);
-
-        $response = $this->pinClient->chargeCard($parameter);
-        $this->assertSame(201, $response->getStatusCode());
-        $this->assertStringContainsString('success', $response->getContent());
-        $this->assertTrue($response->toArray()['response']['captured']);
+        $card = $this->getValidCardParameter($cardType);
+        $cardResponse = $this->pinClient->storeCard($card)->toArray();
+        return $cardResponse['response']['token'];
     }
 
-    /**
-     * Test list paginated list of charges.
-     *
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
-    public function testListCharges(): void
+    private function getValidCardParameter(string $cardType): CardParameter
     {
-        $response = $this->pinClient->listCharges();
-        $this->assertSame(200, $response->getStatusCode());
-        $this->assertStringContainsString('pagination', $response->getContent());
-    }
+        if ($cardType !== 'visa' && $cardType !== 'master') {
+            throw new \InvalidArgumentException('invalid card type');
+        }
 
-    /**
-     * Test store a card.
-     *
-     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
-     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
-     */
-    public function testStoreCard(): void
-    {
-        $response = $this->pinClient->storeCard(StoreCardParameter::createFromCardParameter($this->validCard));
-        $this->assertSame(201, $response->getStatusCode());
-        $this->assertStringContainsString('token', $response->getContent());
+        if ($cardType === 'visa') {
+            return $this->createTestValidVisaCard();
+        }
+
+        return $this->createTestValidMasterCard();
     }
 }
